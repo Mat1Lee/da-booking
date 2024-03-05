@@ -2,10 +2,13 @@ import { FaSearch } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
+import { Button, Modal } from 'antd';
+import HighFilter from './HighFilter';
 
 export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isOpen,setOpen] = useState(false)
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,7 +17,9 @@ export default function Header() {
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
-
+  const onCancel = () =>{
+    setOpen(false)
+  }
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get('searchTerm');
@@ -23,6 +28,7 @@ export default function Header() {
     }
   }, [location.search]);
   return (
+    <>
     <header className='bg-slate-200 shadow-md'>
       <div className='flex justify-between items-center max-w-6xl mx-auto p-3'>
         <Link to='/'>
@@ -46,6 +52,9 @@ export default function Header() {
             <FaSearch className='text-slate-600' />
           </button>
         </form>
+        <Button style={{color:'black'}} type='primary' onClick={()=>setOpen(true)}>
+          Tìm kiếm nâng cao
+        </Button>
         <ul className='flex gap-4'>
           <Link to='/'>
             <li className='hidden sm:inline text-slate-700 hover:underline'>
@@ -70,6 +79,18 @@ export default function Header() {
           </Link>
         </ul>
       </div>
+      
     </header>
+    <Modal 
+      open={isOpen}
+      onCancel={() => setOpen(false)}
+      footer={null}
+      title="Tìm kiếm nâng cao"
+      width={1000}
+      >
+        <HighFilter onCancel={onCancel}/>
+      </Modal>
+    </>
+    
   );
 }
